@@ -13,11 +13,12 @@ class ParticlesCanvas {
 	constructor(canvas, options) {
 		this.options = {
 			autoInit: true,
-			particlesLimit: 70,
+			particlesLimit: 50,
 			particlesSize: 2,
 			particlesVelocityLimit: .5,
 			particlesColor: '#eee',
-			linesLenght: 130,
+			linesLenght: 150,
+			mouseLinesLength: 290,
 			linesColor: '255, 255, 255',
 			...options
 		}
@@ -33,6 +34,10 @@ class ParticlesCanvas {
 		this.randomParticles = []
 		for(let i = 0; i < this.options.particlesLimit; i++)
 			this.randomParticles.push(new Particle({ xLimit: this.canvas.width, yLimit: this.canvas.height, velocityLimit: this.options.particlesVelocityLimit }))
+		this.mousePosition = [0, 0]
+		this.canvas.addEventListener('mousemove', e => {
+			this.mousePosition = this.getMousePos(e)
+		})
 	}
 
 	draw = () => {
@@ -43,7 +48,6 @@ class ParticlesCanvas {
 			let closestParticles = this.randomParticles.filter(tested => this.particlesDistance(particle, tested) < this.options.linesLenght)
 			closestParticles.forEach(closeParticle => {
 				let distance = this.particlesDistance(particle, closeParticle)
-
 				// const opacity = -1 / this.options.linesLenght * distance + 1
 				const opacity = 0.5 * Math.cos(Math.PI * distance / this.options.linesLenght) + 0.5
 				// const opacity = 1 / Math.PI * Math.acos(2 / this.options.linesLenght * distance - 1)
@@ -54,6 +58,18 @@ class ParticlesCanvas {
 				this.ctx.lineTo(closeParticle.x, closeParticle.y)
 				this.ctx.stroke()
 			})
+
+			const mouseDistance = this.particlesDistance(particle, { x: this.mousePosition[0], y: this.mousePosition[1] })
+			if(mouseDistance < this.options.mouseLinesLength) {
+				const opacity = -1 / this.options.mouseLinesLength * mouseDistance + 1
+				this.ctx.strokeStyle = `rgba(${this.options.linesColor}, ${opacity})`
+				this.ctx.lineWidth = this.options.particlesSize * opacity
+				this.ctx.beginPath()
+				this.ctx.moveTo(particle.x, particle.y)
+				this.ctx.lineTo(this.mousePosition[0], this.mousePosition[1])
+				this.ctx.stroke()
+			}
+
 		})
 
 	}
@@ -69,6 +85,14 @@ class ParticlesCanvas {
 
 	particlesDistance(partA, partB) {
 		return Math.sqrt(Math.pow(partB.x - partA.x, 2) + Math.pow(partB.y - partA.y, 2))
+	}
+
+	getMousePos(ev) {
+		var rect = this.canvas.getBoundingClientRect();
+		return [
+			ev.clientX - rect.left,
+			ev.clientY - rect.top
+		]
 	}
 
 }
