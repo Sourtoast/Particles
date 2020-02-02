@@ -13,7 +13,7 @@ class ParticlesCanvas {
 	constructor(canvas, options) {
 		this.options = {
 			autoInit: true,
-			particlesLimit: 50,
+			particlesNumber: 50,
 			particlesSize: 2,
 			particlesVelocityLimit: 1,
 			particlesColor: '#eee',
@@ -32,12 +32,21 @@ class ParticlesCanvas {
 
 	init() {
 		this.randomParticles = []
-		for(let i = 0; i < this.options.particlesLimit; i++)
+		for(let i = 0; i < this.options.particlesNumber; i++)
 			this.randomParticles.push(new Particle({ xLimit: this.canvas.width, yLimit: this.canvas.height, velocityLimit: this.options.particlesVelocityLimit }))
 		this.canvas.addEventListener('mousemove', e => {
 			this.mousePosition = this.getMousePos(e)
 		})
-		this.canvas.addEventListener('mouseout', e => this.mousePosition = false )
+		this.canvas.addEventListener('mouseout', e => this.mousePosition = false)
+		this.canvas.addEventListener('mousedown', e => {
+			const [x, y] = this.getMousePos(e)
+			this.randomParticles.push(new Particle({
+				x: x,
+				y: y,
+				xLimit: this.canvas.width, 
+				yLimit: this.canvas.height, 
+				velocityLimit: this.options.particlesVelocityLimit }))
+		})
 	}
 
 	draw = () => {
@@ -108,7 +117,9 @@ class Particle {
 			...options
 		}
 
-		const [ x, y ] = this.randomCoords()
+		if(this.options.x && this.options.y) var { x, y } = this.options
+		else var [ x, y ] =  this.randomCoords()
+
 		this.x = x
 		this.y = y
 
