@@ -1,14 +1,30 @@
 'use strict'
 
 window.addEventListener('DOMContentLoaded', () => {
-	const canvases = document.querySelectorAll('.particles')
-	var particlesCanvases = []
-	canvases.forEach(canvas => {
-		particlesCanvases.push(new ParticlesCanvas(canvas))
+	const particleCanvasElement = document.querySelector('#particle-canvas')
+	const particleCanvasObject = new ParticleCanvas(particleCanvasElement, {
+		autoInit: false,
+		particlesNumber: 100,
+		linesLenght: 200,
+		mouseLinesLength: 300
 	})
+	particleCanvasObject.width = particleCanvasElement.parentElement.offsetWidth
+	particleCanvasObject.height = particleCanvasElement.parentElement.offsetHeight
+	particleCanvasObject.init()
+
+	window.addEventListener('resize', () => {
+		particleCanvasObject.width = particleCanvasElement.parentElement.offsetWidth
+		particleCanvasObject.height = particleCanvasElement.parentElement.offsetHeight
+	})
+
+	// const canvases = document.querySelectorAll('.particles')
+	// var ParticleCanvases = []
+	// canvases.forEach(canvas => {
+	// 	ParticleCanvases.push(new ParticleCanvas(canvas))
+	// })
 })
 
-class ParticlesCanvas {
+class ParticleCanvas {
 
 	constructor(canvas, options) {
 		this.options = {
@@ -24,16 +40,28 @@ class ParticlesCanvas {
 		}
 		this.canvas = canvas
 		this.ctx = this.canvas.getContext('2d')
-		if(this.options.autoInit) {
+		this.generatingParticles = false
+		this.randomParticles = []
+		if(this.options.autoInit)
 			this.init()
-			this.draw()
-		}
+	}
+
+	get width() { return this.canvas.width }
+
+	set width(width) {
+		this.canvas.width = width
+		this.generateRandomParticles()
+	}
+
+	get height() { return this.canvas.height }
+
+	set height(height) {
+		this.canvas.height = height
+		this.generateRandomParticles()
 	}
 
 	init() {
-		this.randomParticles = []
-		for(let i = 0; i < this.options.particlesNumber; i++)
-			this.randomParticles.push(new Particle({ xLimit: this.canvas.width, yLimit: this.canvas.height, velocityLimit: this.options.particlesVelocityLimit }))
+		this.generateRandomParticles()
 		this.canvas.addEventListener('mousemove', e => {
 			this.mousePosition = this.getMousePos(e)
 		})
@@ -48,6 +76,7 @@ class ParticlesCanvas {
 				velocityLimit: this.options.particlesVelocityLimit
 			}))
 		})
+		this.draw()
 	}
 
 	draw = () => {
@@ -105,6 +134,17 @@ class ParticlesCanvas {
 			ev.clientX - rect.left,
 			ev.clientY - rect.top
 		]
+	}
+
+	generateRandomParticles() {
+		if(this.generatingParticles) return
+		this.generatingParticles = true
+		this.randomParticles = []
+		setTimeout(() => {
+			for(let i = 0; i < this.options.particlesNumber; i++)
+				this.randomParticles.push(new Particle({ xLimit: this.width, yLimit: this.height, velocityLimit: this.options.particlesVelocityLimit }))
+			this.generatingParticles = false
+		}, 500)
 	}
 
 }
