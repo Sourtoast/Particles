@@ -43,9 +43,10 @@ class ParticlesCanvas {
 			this.randomParticles.push(new Particle({
 				x: x,
 				y: y,
-				xLimit: this.canvas.width, 
-				yLimit: this.canvas.height, 
-				velocityLimit: this.options.particlesVelocityLimit }))
+				xLimit: this.canvas.width,
+				yLimit: this.canvas.height,
+				velocityLimit: this.options.particlesVelocityLimit
+			}))
 		})
 	}
 
@@ -68,7 +69,7 @@ class ParticlesCanvas {
 				this.ctx.stroke()
 			})
 
-			if(this.mousePosition){
+			if(this.mousePosition) {
 				const mouseDistance = this.particlesDistance(particle, { x: this.mousePosition[0], y: this.mousePosition[1] })
 				if(mouseDistance < this.options.mouseLinesLength) {
 					const opacity = 1 / Math.PI * Math.acos(2 / this.options.mouseLinesLength * mouseDistance - 1)
@@ -118,18 +119,18 @@ class Particle {
 		}
 
 		if(this.options.x && this.options.y) var { x, y } = this.options
-		else var [ x, y ] =  this.randomCoords()
+		else var [x, y] = this.randomCoords()
 
 		this.x = x
 		this.y = y
 
-		const [ velX, velY ] = this.randomVelocity()
+		const [velX, velY] = this.randomVelocity()
 		this.velX = velX
 		this.velY = velY
 	}
 
 	requestNewPosition() {
-		const [ newX, newY ] = [ this.x + this.velX, this.y + this.velY ]
+		const [newX, newY] = [this.x + this.velX, this.y + this.velY]
 		if(newX >= this.options.xLimit || newX <= 0)
 			this.velX = - this.velX
 		if(newY >= this.options.yLimit || newY <= 0)
@@ -146,14 +147,14 @@ class Particle {
 	}
 
 	randomVelocity() {
-		const negative = () => { 
-			if(Math.random() > 0.5) return false 
+		const negative = () => {
+			if(Math.random() > 0.5) return false
 			else return true
 		}
 		const randomNumber = () => Math.random() * this.options.velocityLimit
 		return [
-			negative() ? - randomNumber(): randomNumber(),
-			negative() ? - randomNumber(): randomNumber()
+			negative() ? - randomNumber() : randomNumber(),
+			negative() ? - randomNumber() : randomNumber()
 		]
 	}
 }
