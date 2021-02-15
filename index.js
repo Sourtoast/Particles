@@ -1,6 +1,6 @@
 'use strict'
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
 	const particleCanvasElement = document.querySelector('#particle-canvas')
 	const particleCanvasObject = new ParticleCanvas(particleCanvasElement, {
 		autoInit: false,
