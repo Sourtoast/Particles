@@ -5,7 +5,7 @@ window.addEventListener('load', () => {
 	const particleCanvasObject = new ParticleCanvas(particleCanvasElement, {
 		autoInit: false,
 		particlesNumber: 100,
-		linesLenght: 200,
+		linesLength: 200,
 		mouseLinesLength: 300
 	})
 	particleCanvasObject.width = particleCanvasElement.parentElement.offsetWidth
@@ -33,7 +33,7 @@ class ParticleCanvas {
 			particlesSize: 2,
 			particlesVelocityLimit: 1,
 			particlesColor: '#eee',
-			linesLenght: 120,
+			linesLength: 120,
 			mouseLinesLength: 290,
 			linesColor: '255, 255, 255',
 			...options
@@ -84,12 +84,12 @@ class ParticleCanvas {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.randomParticles.forEach(particle => {
 			this.drawParticle(particle)
-			let closestParticles = this.randomParticles.filter(tested => this.particlesDistance(particle, tested) < this.options.linesLenght)
+			let closestParticles = this.randomParticles.filter(tested => this.particlesDistance(particle, tested) < this.options.linesLength)
 			closestParticles.forEach(closeParticle => {
 				let distance = this.particlesDistance(particle, closeParticle)
 				// const opacity = -1 / this.options.linesLenght * distance + 1
 				// const opacity = 0.5 * Math.cos(Math.PI * distance / this.options.linesLenght) + 0.5
-				const opacity = 1 / Math.PI * Math.acos(2 / this.options.linesLenght * distance - 1)
+				const opacity = 1 / Math.PI * Math.acos(2 / this.options.linesLength * distance - 1)
 				this.ctx.strokeStyle = `rgba(${this.options.linesColor}, ${opacity})`
 				this.ctx.lineWidth = this.options.particlesSize * opacity
 				this.ctx.beginPath()
@@ -187,10 +187,7 @@ class Particle {
 	}
 
 	randomVelocity() {
-		const negative = () => {
-			if(Math.random() > 0.5) return false
-			else return true
-		}
+		const negative = () =>  Math.random() <= 0.5;
 		const randomNumber = () => Math.random() * this.options.velocityLimit
 		return [
 			negative() ? - randomNumber() : randomNumber(),
